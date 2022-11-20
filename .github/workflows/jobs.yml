@@ -32,8 +32,8 @@ job:
     matrix:
      version: [10,12,14]
      os: [ubuntu-latest,windows-latest,macOS-latest]
-   runs-on: ${{matrix.os}}
-   steps:
+    runs-on: ${{matrix.os}}
+    steps:
     -run: echo"JOB2 RUNS IF JOB2 IS SUCCESSFULL"
   job:
    if: always()
