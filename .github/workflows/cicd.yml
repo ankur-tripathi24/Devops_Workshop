@@ -1,53 +1,55 @@
 name: CI/CD Example
 on:
-  push:
-    branches: ['master']
-  workflow_dispatch:
-  defaults:
-  run:
-   working_directory: ./
-  jobs:
-   Build:
-    name: build
-    runs-on: ubuntu_latest
-    
+ push:
+   branches: ['master']
+ workflow_dispatch:
+defaults:
+ run:
+  working-directory: ./
+jobs:
+  Build:
+   name: build
+   runs-on: ubuntu-latest
+   
+   steps: 
+    - name: Cloning the project repo
+      uses: actions/checkout@v3 
+      
+    - name: Install Node.js
+      uses:  actions/setup-node@v3
+      with: 
+       node-version: 14.x
+    - name: NPM INSTALL
+      run: npm install
+     
+    - name: Build project
+      run : npm run build
+      
+    - name: Upload our production ready build files
+      uses: actions/upload-artifact@v3
+      with:
+        name: production
+        path: ./build
+  deploy:
+    name: deploy
+    needs: Build
+    runs-on: ubuntu-latest
     steps:
-     - name: cloning the project repo
-       uses: actions/checkout@v3
-       
-     - name: Install Node.js
-       uses: actions/setup-node@v3
-       with:
-        node-version: 14.x
-
-     - name: NPM INSTALL
-       run: npm install
-       
-     - name: Build project
-       run : npm run build
-       
-     - name: Upload our production ready build files
-       uses: actions/upload-artifact@v3
+     - name: downloading artifacts
+       uses: actions/download-artifact@v3
        with:
          name: production
          path: ./build
-         
-   deploy: 
-     name: deploy
-     needs: build
-     runs-on: ubuntu_latest
-     steps: 
-      - name: downloading artifactds
-        uses: actions/download-artifacts@v3
-        with: 
-          name: download
-          path: ./build
-      - name: Deploy to github pages
-        uses: crazy-max/ghactions-github-pages@v3
-        with:
-           largest_branches: gh-pages
-           build_dir: ./build
-        steps:
+     - name: Deploy to github pages
+       uses: crazy-max/ghaction-github-pages@v3
+       with: 
+          target_branch: gh-pages
+          build_dir: ./build
+       env:
+          GITHUB_TOKEN: ${{github.token }}
+  stale: 
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/stale@v6
         with:
           stale-issue-message: 'This issue is stale because it has been open 30 days with no activity. Remove stale label or comment or this will be closed in 5 days.'
@@ -57,4 +59,4 @@ on:
           days-before-issue-stale: 30
           days-before-pr-stale: 45
           days-before-issue-close: 5
-          days-before-pr-close: 10
+          days-before-pr-close: 10
