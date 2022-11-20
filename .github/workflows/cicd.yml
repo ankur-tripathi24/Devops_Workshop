@@ -3,10 +3,10 @@ on:
   push:
     branches: ['master']
   workflow_dispatch:
- defaults:
+  defaults:
   run:
    working_directory: ./
- jobs:
+  jobs:
    Build:
     name: build
     runs-on: ubuntu_latest
@@ -44,10 +44,10 @@ on:
           path: ./build
       - name: Deploy to github pages
         uses: crazy-max/ghactions-github-pages@v3
-         with:
+        with:
            largest_branches: gh-pages
            build_dir: ./build
-     steps:
+        steps:
       - uses: actions/stale@v6
         with:
           stale-issue-message: 'This issue is stale because it has been open 30 days with no activity. Remove stale label or comment or this will be closed in 5 days.'
